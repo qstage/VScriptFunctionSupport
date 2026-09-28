@@ -70,7 +70,7 @@ public unsafe struct ScriptClassDesc_t
 public class Plugin : BasePlugin
 {
     public override string ModuleName => "VScriptFunctionSupport";
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "1.0.1";
 
     // Example functions
     public delegate int GetHealthFunc(nint @this);
@@ -167,6 +167,11 @@ public class Plugin : BasePlugin
 
         var pScriptClass_CBaseEntity = pScriptClasses[0];
         var pScriptClass_CBaseModelEntity = pScriptClasses[1];
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            pScriptClass_CBaseModelEntity = *(ScriptClassDesc_t*)(pEntity.GetFunctionWithReturn<nint, nint>(3).Invoke(pEntity.Handle) + sizeof(ScriptClassDesc_t) + (10 * 8));
+        }
 
         for (int i = 0; i < pScriptClass_CBaseEntity.m_FunctionBindings.m_iSize; i++)
         {
